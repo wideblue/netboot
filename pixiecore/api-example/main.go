@@ -25,6 +25,9 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
+
+	//	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -41,16 +44,26 @@ func main() {
 
 func api(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Serving boot config for %s", filepath.Base(r.URL.Path))
+	ipxeURL := os.Getenv("IPXEURL")
 	resp := struct {
+		K string `json:"ipxe-script"`
+	}{
+		K: ipxeURL,
+	}
+	/* resp := struct {
 		K string   `json:"kernel"`
 		I []string `json:"initrd"`
 	}{
-		K: "http://tinycorelinux.net/7.x/x86/release/distribution_files/vmlinuz64",
+		K: "http://tinycorelinux.net/11.x/x86/release/distribution_files/vmlinuz64",
 		I: []string{
-			"http://tinycorelinux.net/7.x/x86/release/distribution_files/rootfs.gz",
-			"http://tinycorelinux.net/7.x/x86/release/distribution_files/modules64.gz",
+			"http://tinycorelinux.net/11.x/x86/release/distribution_files/rootfs.gz",
+			"http://tinycorelinux.net/11.x/x86/release/distribution_files/modules64.gz",
+		}, */
+	/* K: "http://mirrors.edge.kernel.org/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux",
+		I: []string{
+			"http://mirrors.edge.kernel.org/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz",
 		},
-	}
+	} */
 
 	if err := json.NewEncoder(w).Encode(&resp); err != nil {
 		panic(err)

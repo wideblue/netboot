@@ -139,6 +139,8 @@ func (c *Conn) Close() error {
 // packet and the interface it was received on.
 func (c *Conn) RecvDHCP() (*Packet, *net.Interface, error) {
 	var buf [1500]byte
+	fmt.Println("RecvDHCP called")
+
 	for {
 		b, _, ifidx, err := c.conn.Recv(buf[:])
 		if err != nil {
@@ -148,6 +150,7 @@ func (c *Conn) RecvDHCP() (*Packet, *net.Interface, error) {
 			continue
 		}
 		pkt, err := Unmarshal(b)
+		fmt.Print(pkt)
 		if err != nil {
 			continue
 		}

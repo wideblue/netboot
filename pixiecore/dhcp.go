@@ -69,7 +69,7 @@ func (s *Server) serveDHCP(conn *dhcp4.Conn) error {
 			continue
 		}
 
-		resp, err := s.offerDHCP(pkt, mach, serverIP, fwtype)
+		resp, err := s.offerDHCP(pkt, mach, serverIP, fwtype, *spec)
 		if err != nil {
 			s.log("DHCP", "Failed to construct ProxyDHCP offer for %s: %s", pkt.HardwareAddr, err)
 			continue
@@ -161,7 +161,7 @@ func (s *Server) validateDHCP(pkt *dhcp4.Packet) (mach Machine, fwtype Firmware,
 	return mach, fwtype, nil
 }
 
-func (s *Server) offerDHCP(pkt *dhcp4.Packet, mach Machine, serverIP net.IP, fwtype Firmware) (*dhcp4.Packet, error) {
+func (s *Server) offerDHCP(pkt *dhcp4.Packet, mach Machine, serverIP net.IP, fwtype Firmware, spec Spec) (*dhcp4.Packet, error) {
 	resp := &dhcp4.Packet{
 		Type:          dhcp4.MsgOffer,
 		TransactionID: pkt.TransactionID,
@@ -235,8 +235,8 @@ func (s *Server) offerDHCP(pkt *dhcp4.Packet, mach Machine, serverIP net.IP, fwt
 		// We've already gone through one round of chainloading, now
 		// we can finally chainload to HTTP for the actual boot
 		// script.
-		resp.BootFilename = fmt.Sprintf("http://%s:%d/_/ipxe?arch=%d&mac=%s", serverIP, s.HTTPPort, mach.Arch, mach.MAC)
-
+		//resp.BootFilename = fmt.Sprintf("http://%s:%d/_/ipxe?arch=%d&mac=%s", serverIP, s.HTTPPort, mach.Arch, mach.MAC)
+		resp.BootFilename = spec.IpxeScript
 	default:
 		return nil, fmt.Errorf("unknown firmware type %d", fwtype)
 	}
